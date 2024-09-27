@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Events\TicketMessageSent;
+use App\Mail\UserTicketCreated;
 use App\Models\Message;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class UserTicketController extends Controller
 {
@@ -34,6 +36,12 @@ class UserTicketController extends Controller
             'description' => $request->description,
             'user_id' => auth()->user()->id,
         ]);
+
+        $adminUser = User::where('role', 'admin')->get();
+
+        foreach ($adminUser as $admin) {
+            Mail::to($admin->email)->send(new UserTicketCreated($ticket));
+        }
 
 
         return redirect()->route('user.tickets.show', ['ticket' => $ticket->id]);

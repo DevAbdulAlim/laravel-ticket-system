@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\TicketMessageSent;
 use App\Http\Controllers\Controller;
+use App\Mail\TicketStatusChanged;
 use App\Models\Message;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AdminTicketController extends Controller
 {
@@ -28,6 +30,9 @@ class AdminTicketController extends Controller
     {
         $ticket->status = 'open';
         $ticket->save();
+
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket, 'open'));
+
         return redirect()->route('admin.tickets.show', $ticket->id)->with('success', 'ticket re-opened successfully');
     }
 
@@ -35,6 +40,10 @@ class AdminTicketController extends Controller
     {
         $ticket->status = 'closed';
         $ticket->save();
+
+
+        Mail::to($ticket->user->email)->send(new TicketStatusChanged($ticket, 'closed'));
+
         return redirect()->route('admin.tickets.show', $ticket->id)->with('success', 'ticket closed successfully');
     }
 
