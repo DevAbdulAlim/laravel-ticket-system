@@ -25,7 +25,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('user.dashboard'));
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([
@@ -58,7 +58,7 @@ class AuthController extends Controller
 
         Auth::attempt($request->only('email', 'password'));
 
-        return redirect()->route('user.dashboard');
+        return redirect()->route('home');
     }
 
     // Handle logout
